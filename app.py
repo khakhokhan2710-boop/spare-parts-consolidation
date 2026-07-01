@@ -216,19 +216,13 @@ def consolidate(master_bytes, sample_data, month):
 
 
 # ============================================================
-# HTML TEMPLATE (embedded)
+# HTML TEMPLATE (embedded in code để deploy không bị thiếu file)
 # ============================================================
-def get_html():
-    with open('index_flask.html', 'r', encoding='utf-8') as f:
-        return f.read()
+HTML_CONTENT = open(os.path.join(os.path.dirname(__file__), 'index_flask.html'), 'r', encoding='utf-8').read()
 
-
-# ============================================================
-# ROUTES
-# ============================================================
 @app.route('/')
 def index():
-    return get_html()
+    return HTML_CONTENT
 
 
 @app.route('/api/consolidate', methods=['POST'])
