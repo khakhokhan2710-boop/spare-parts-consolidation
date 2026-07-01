@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Test SheetJS</title></head>
+<body style="font-family:sans-serif;padding:40px;background:#fdf6f0">
+<h2>🧪 Test SheetJS</h2>
+<p>Chọn file Excel để test:</p>
+<input type="file" id="fileInput" accept=".xlsx">
+<div id="result" style="margin-top:20px;padding:20px;background:#fff;border-radius:10px;border:1px solid #eee;min-height:100px"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+document.getElementById('fileInput').addEventListener('change', async function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const el = document.getElementById('result');
+  el.innerHTML = '⏳ Đang đọc file...';
+  
+  try {
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data, {type:'array', cellDates:true});
+    el.innerHTML = `✅ Đọc thành công!<br>📄 File: ${file.name}<br>📊 Sheets: ${wb.SheetNames.join(', ')}<br>📏 Dung lượng: ${(file.size/1024).toFixed(0)} KB`;
+  } catch(e) {
+    el.innerHTML = `❌ LỖI: ${e.message}`;
+  }
+});
+</script>
+</body>
+</html>
