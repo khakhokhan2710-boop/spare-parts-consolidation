@@ -117,17 +117,36 @@ def index(): return HTML
 @app.route('/api/consolidate', methods=['POST'])
 def api():
     try:
+        import sys, traceback
         mf=request.files.get('master'); sfs=request.files.getlist('samples')
         mo=request.form.get('month','May'); pw=request.form.get('password','') or 'sp'
         if not mf: return jsonify({'error':'Thiếu master'}),400
         if not sfs: return jsonify({'error':'Thiếu sample'}),400
-        mb=decrypt(mf.read(),pw)
+        
+        # Step 1: decrypt
+        mb = mf.read()
+        try:
+            mb=decrypt(mb,pw)
+        except Exception as de:
+            return jsonify({'error':f'Decrypt fail: {de}', 'trace':traceback.format_exc()}),500
+        
+        # Step 2: read samples
         ad={}
         for sf in sfs:
-            d=read_sample(sf.read())
-            for s,rows in d.items(): ad.setdefault(s,[]).extend(rows)
+            try:
+                d=read_sample(sf.read())
+                for s,rows in d.items(): ad.setdefault(s,[]).extend(rows)
+            except Exception as se:
+                return jsonify({'error':f'Read sample {sf.filename} fail: {se}', 'trace':traceback.format_exc()}),500
+        
         if not ad: return jsonify({'error':'Không có dữ liệu output!'}),400
-        rb,st=consolidate(mb,ad,mo)
+        
+        # Step 3: consolidate
+        try:
+            rb,st=consolidate(mb,ad,mo)
+        except Exception as ce:
+            return jsonify({'error':f'Consolidate fail: {ce}', 'trace':traceback.format_exc()}),500
+        
         on=f"Detail_Spare_parts_{mo}26_CONSOLIDATED.xlsx"
         op=os.path.join(app.config['UPLOAD_FOLDER'],on)
         with open(op,'wb') as f: f.write(rb)
@@ -135,6 +154,21 @@ def api():
     except Exception as e:
         import traceback
         return jsonify({'error':str(e),'trace':traceback.format_exc()}),500
+
+@app.route('/api/health')
+def health():
+    import sys, platform
+    mods = {}
+    for m in ['openpyxl','msoffcrypto','flask','gunicorn']:
+        try: exec(f'import {m}; mods["{m}"]={m}.__version__')
+        except: mods[m] = 'NOT FOUND'
+    return jsonify({
+        'python': sys.version,
+        'platform': platform.platform(),
+        'modules': mods,
+        'cwd': os.getcwd(),
+        'files': os.listdir('.')[:20],
+    })
 
 @app.route('/api/download/<fn>')
 def download(fn):
