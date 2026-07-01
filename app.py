@@ -2,7 +2,8 @@
 import os, io, tempfile
 from pathlib import Path
 from flask import Flask, request, jsonify, send_file
-import msoffcrypto, openpyxl
+from decryptlib import decrypt_excel
+import openpyxl
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
@@ -21,19 +22,6 @@ MONTHS = ['Mar','Apr','May','Jun']
 
 import re
 def norm(s): return re.sub(r'[^a-z0-9]','',str(s).lower().strip())
-
-def decrypt(fb, pw='sp'):
-    """Decrypt Excel, thử openpyxl trước, fallback msoffcrypto"""
-    try:
-        openpyxl.load_workbook(io.BytesIO(fb), data_only=True).close()
-        return fb
-    except: pass
-    try:
-        o = msoffcrypto.OfficeFile(io.BytesIO(fb))
-        o.load_key(password=pw)
-        b = io.BytesIO(); o.decrypt(b); b.seek(0); return b.read()
-    except Exception as e:
-        raise ValueError(f"Không thể giải mã (sai password?): {e}")
 
 def read_sample(fb):
     wb = openpyxl.load_workbook(io.BytesIO(fb), data_only=True)
@@ -126,7 +114,7 @@ def api():
         # Step 1: decrypt
         mb = mf.read()
         try:
-            mb=decrypt(mb,pw)
+            mb=decrypt_excel(mb,pw)
         except Exception as de:
             return jsonify({'error':f'Decrypt fail: {de}', 'trace':traceback.format_exc()}),500
         
