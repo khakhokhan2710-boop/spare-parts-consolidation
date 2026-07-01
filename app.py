@@ -23,17 +23,17 @@ import re
 def norm(s): return re.sub(r'[^a-z0-9]','',str(s).lower().strip())
 
 def decrypt(fb, pw='sp'):
+    """Decrypt Excel, thử openpyxl trước, fallback msoffcrypto"""
     try:
-        wb = openpyxl.load_workbook(io.BytesIO(fb), data_only=True)
-        wb.close(); return fb
+        openpyxl.load_workbook(io.BytesIO(fb), data_only=True).close()
+        return fb
     except: pass
-    with tempfile.NamedTemporaryFile(suffix='.xlsx',delete=False) as t:
-        t.write(fb); p = t.name
     try:
-        with open(p,'rb') as f:
-            o = msoffcrypto.OfficeFile(f); o.load_key(password=pw)
-            b = io.BytesIO(); o.decrypt(b); b.seek(0); return b.read()
-    finally: os.unlink(p)
+        o = msoffcrypto.OfficeFile(io.BytesIO(fb))
+        o.load_key(password=pw)
+        b = io.BytesIO(); o.decrypt(b); b.seek(0); return b.read()
+    except Exception as e:
+        raise ValueError(f"Không thể giải mã (sai password?): {e}")
 
 def read_sample(fb):
     wb = openpyxl.load_workbook(io.BytesIO(fb), data_only=True)
