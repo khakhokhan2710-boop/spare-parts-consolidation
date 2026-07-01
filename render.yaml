@@ -2,5 +2,6 @@ services:
   - type: web
     name: spare-parts-consolidation
     env: python
+    runtime: python311
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
