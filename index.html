@@ -4,754 +4,241 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOYA - Spare Parts Consolidation</title>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 <style>
-/* ===== RESET & BASE ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-:root{
-  --bg:#fdf6f0;
-  --bg-alt:#f8eee6;
-  --card:#ffffff;
-  --card-hover:#fffaf5;
-  --border:#f0e0d8;
-  --border-light:#f5eae4;
-  --primary:#f4a7a7;
-  --primary-hover:#e89292;
-  --primary-light:#fce4e4;
-  --secondary:#a8d8ea;
-  --secondary-light:#dff0f8;
-  --accent:#c3aed6;
-  --accent-light:#ede4f3;
-  --pastel-green:#b5e6c3;
-  --pastel-green-light:#e3f5e8;
-  --pastel-yellow:#fce9b5;
-  --pastel-yellow-light:#fef5e0;
-  --pastel-orange:#fad4b5;
-  --pastel-orange-light:#fdede0;
-  --text:#4a4a4a;
-  --text-dim:#9b8e8a;
-  --text-light:#c4b8b4;
-  --success:#7bc8a4;
-  --error:#e89292;
-  --warn:#e8c87a;
-  --shadow:0 2px 12px rgba(200,170,160,.12);
-  --shadow-hover:0 4px 20px rgba(200,170,160,.2);
-  --radius:14px;
-  --radius-sm:10px;
-}
-body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;
-  display:flex;justify-content:center;padding:24px;
-}
-.container{max-width:960px;width:100%}
-
-/* ===== HEADER ===== */
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#fdf6f0;color:#4a4a4a;min-height:100vh;display:flex;justify-content:center;padding:24px}
+.container{max-width:900px;width:100%}
 .header{text-align:center;padding:32px 0 24px}
-.header .logo-wrap{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:64px;height:64px;border-radius:50%;
-  background:linear-gradient(135deg,var(--primary-light),var(--secondary-light));
-  margin-bottom:12px;font-size:32px;box-shadow:0 4px 16px rgba(180,140,200,.15);
-}
-.header h1{
-  font-size:28px;font-weight:800;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:-.5px;line-height:1.2;
-}
-.header p{color:var(--text-dim);font-size:13px;margin-top:4px;font-weight:400}
-.header .badge{
-  display:inline-block;
-  background:linear-gradient(135deg,var(--secondary-light),var(--accent-light));
-  color:var(--text);padding:4px 14px;border-radius:20px;
-  font-size:11px;font-weight:600;margin-top:10px;
-  border:1px solid var(--border-light);
-}
-
-/* ===== CARDS ===== */
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:22px;margin-bottom:14px;
-  box-shadow:var(--shadow);transition:.2s;
-}
-.card:hover{box-shadow:var(--shadow-hover);border-color:var(--border-light)}
-.card-title{
-  font-size:15px;font-weight:600;margin-bottom:14px;
-  display:flex;align-items:center;gap:8px;color:var(--text);
-}
-
-/* ===== FILE INPUT ===== */
-.file-zone{
-  position:relative;border:2px dashed var(--border);
-  border-radius:var(--radius-sm);padding:28px 20px;
-  text-align:center;transition:.25s;cursor:pointer;
-  background:var(--bg-alt);
-}
-.file-zone:hover,.file-zone.dragover{
-  border-color:var(--primary);background:var(--primary-light);
-}
-.file-zone.has-file{border-color:var(--pastel-green);border-style:solid;background:var(--pastel-green-light)}
+.header .logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#fce4e4,#dff0f8);margin-bottom:12px;font-size:32px}
+.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,#f4a7a7,#c3aed6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:#9b8e8a;font-size:13px;margin-top:4px}
+.header .badge{display:inline-block;background:#ede4f3;color:#4a4a4a;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;margin-top:10px}
+.card{background:#fff;border:1px solid #f0e0d8;border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 2px 12px rgba(200,170,160,.12)}
+.card-title{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.file-zone{position:relative;border:2px dashed #f0e0d8;border-radius:10px;padding:26px 20px;text-align:center;transition:.25s;cursor:pointer;background:#f8eee6}
+.file-zone:hover,.file-zone.dragover{border-color:#f4a7a7;background:#fce4e4}
+.file-zone.has-file{border-color:#b5e6c3;border-style:solid;background:#e3f5e8}
 .file-zone .icon{font-size:36px;margin-bottom:8px;display:block}
-.file-zone .label{font-size:14px;color:var(--text-dim);font-weight:400}
-.file-zone .label b{color:var(--text)}
-.file-zone .sub{font-size:11px;color:var(--text-light);margin-top:6px}
+.file-zone .label{font-size:14px;color:#9b8e8a}
+.file-zone .label b{color:#4a4a4a}
+.file-zone .sub{font-size:11px;color:#c4b8b4;margin-top:6px}
 .file-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-
-/* ===== FILE LIST ===== */
 .file-list{margin-top:12px}
-.file-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;background:var(--bg-alt);border-radius:var(--radius-sm);
-  margin-bottom:6px;font-size:13px;border:1px solid var(--border-light);
-  transition:.15s;
-}
-.file-item:hover{background:var(--card-hover);border-color:var(--border)}
-.file-item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.file-item .size{color:var(--text-light);font-size:11px;margin:0 10px;font-weight:400}
-.file-item .remove{color:var(--error);cursor:pointer;font-size:16px;line-height:1;padding:0 6px;opacity:.7;transition:.15s}
-.file-item .remove:hover{opacity:1}
-.file-item .status-ok{color:var(--success);font-weight:600;font-size:12px}
-.file-item .section-badge{
-  display:inline-block;background:var(--secondary-light);color:var(--text);
-  padding:2px 8px;border-radius:12px;font-size:10px;font-weight:500;margin-left:5px;
-}
-
-/* ===== SELECTORS ===== */
-.row{display:flex;gap:12px;flex-wrap:wrap}
-.row>*{flex:1;min-width:180px}
-select,input[type=password]{
-  width:100%;padding:11px 14px;background:var(--bg-alt);
-  border:1px solid var(--border);border-radius:var(--radius-sm);
-  color:var(--text);font-size:14px;outline:none;appearance:none;
-  font-family:'Inter',sans-serif;transition:.15s;
-}
-select:focus,input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-select option{background:var(--card);color:var(--text)}
-.pw-toggle{
-  display:flex;align-items:center;gap:6px;margin-top:10px;
-  font-size:12px;color:var(--text-dim);cursor:pointer;transition:.15s;
-}
-.pw-toggle:hover{color:var(--primary)}
-
-/* ===== BUTTON ===== */
-.btn-run{
-  width:100%;padding:16px;border:none;border-radius:var(--radius);
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;font-size:17px;font-weight:700;
-  cursor:pointer;transition:.2s;letter-spacing:.5px;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  box-shadow:0 4px 16px rgba(244,167,167,.25);
-}
-.btn-run:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 24px rgba(244,167,167,.35);
-}
-.btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-run .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
-.btn-run.loading .spinner{display:inline-block}
-.btn-run.loading .btn-text{opacity:.7}
+.file-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8eee6;border-radius:10px;margin-bottom:6px;font-size:13px}
+.file-item .remove{color:#e89292;cursor:pointer;font-size:18px;padding:0 6px}
+select{width:100%;padding:11px 14px;background:#f8eee6;border:1px solid #f0e0d8;border-radius:10px;color:#4a4a4a;font-size:14px;outline:none}
+select:focus{border-color:#f4a7a7}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;color:#fff;font-size:17px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.btn-run{background:linear-gradient(135deg,#f4a7a7,#c3aed6);box-shadow:0 4px 16px rgba(244,167,167,.25)}
+.btn-run:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(244,167,167,.35)}
+.btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-dl{background:linear-gradient(135deg,#b5e6c3,#e3f5e8);color:#4a4a4a}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.loading .spinner{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.btn-download{
-  width:100%;padding:14px;border:none;border-radius:var(--radius);
-  background:linear-gradient(135deg,var(--pastel-green),var(--pastel-green-light));
-  color:var(--text);font-size:16px;font-weight:600;
-  cursor:pointer;transition:.2s;letter-spacing:.5px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  border:1px solid var(--border-light);
-}
-.btn-download:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-
-/* ===== LOG ===== */
-.log-box{
-  background:var(--bg-alt);border:1px solid var(--border-light);
-  border-radius:var(--radius-sm);padding:14px;
-  font-family:'SF Mono','Consolas',monospace;font-size:12px;
-  line-height:1.7;max-height:260px;overflow-y:auto;
-  white-space:pre-wrap;word-break:break-word;
-}
-.log-box .info{color:var(--text-dim)}
-.log-box .ok{color:var(--success);font-weight:500}
-.log-box .err{color:var(--error)}
-.log-box .warn{color:var(--warn)}
-.log-box .highlight{color:var(--primary);font-weight:600}
-.log-empty{color:var(--text-light);font-style:italic;text-align:center;padding:28px}
-
-/* ===== RESULTS ===== */
-.results{display:none}
-.results.show{display:block;animation:fadeIn .4s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
-.stat-card{
-  background:var(--bg-alt);border-radius:var(--radius-sm);
-  padding:16px 12px;text-align:center;border:1px solid var(--border-light);
-  transition:.15s;
-}
-.stat-card:hover{border-color:var(--border)}
-.stat-card .num{font-size:24px;font-weight:800;color:var(--primary);line-height:1.2}
-.stat-card .lbl{font-size:11px;color:var(--text-dim);margin-top:4px;font-weight:500}
-.stat-card.green .num{color:var(--success)}
-.stat-card.red .num{color:var(--error)}
-
-/* ===== TABLE ===== */
-.table-wrap{overflow-x:auto;margin-top:10px;border-radius:var(--radius-sm);border:1px solid var(--border-light)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border-light)}
-th{background:var(--bg-alt);font-weight:600;color:var(--text-dim);position:sticky;top:0;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-tr:hover td{background:var(--card-hover)}
-tr:last-child td{border-bottom:none}
-
-/* ===== FOOTER ===== */
-.footer{text-align:center;padding:24px 0;color:var(--text-light);font-size:11px;font-weight:400}
-
-/* ===== SCROLL ===== */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text-light)}
-
-/* ===== SEPARATOR ===== */
-.sep{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:6px 0 14px}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:640px){
-  body{padding:12px}
-  .container{padding:0}
-  .header h1{font-size:22px}
-  .card{padding:16px}
-  .row{flex-direction:column}
-  .row>*{min-width:unset}
-}
+.log-box{background:#f8eee6;border-radius:10px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.7;max-height:240px;overflow-y:auto;white-space:pre-wrap}
+.result{display:none;margin-top:16px}
+.result.show{display:block;animation:fade .4s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:12px 0}
+.st{background:#f8eee6;border-radius:10px;padding:14px;text-align:center}
+.st .n{font-size:22px;font-weight:800;color:#f4a7a7}
+.st .l{font-size:11px;color:#9b8e8a;margin-top:2px}
+.st.g .n{color:#7bc8a4}
+.st.e .n{color:#e89292}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #f0e0d8}
+th{background:#f8eee6;font-weight:600;color:#9b8e8a;font-size:11px}
+.footer{text-align:center;padding:24px 0;color:#c4b8b4;font-size:11px}
+.note{background:#fef5e0;border:1px solid #fce9b5;border-radius:10px;padding:10px 14px;font-size:12px;margin-top:8px;color:#8a7a40}
+.note b{color:#c8a030}
 </style>
 </head>
 <body>
-
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
-  <div class="logo-wrap">🧾</div>
+  <div class="logo">🧾</div>
   <h1>Spare Parts Consolidation</h1>
-  <p>HOYA LENS VIET NAM LTD.</p>
-  <span class="badge">⚡ Chạy 100% trên trình duyệt · Không cần cài đặt</span>
+  <p>HOYA LENS VIET NAM LTD. · 💾 Chạy offline, chỉ cần trình duyệt</p>
 </div>
 
-<!-- FILE MASTER -->
 <div class="card">
-  <div class="card-title">📂 File Master <span style="font-size:11px;color:var(--text-dim);font-weight:400">(Detail Spare parts FY2026)</span></div>
+  <div class="card-title">📂 File Master <span style="font-size:11px;color:#9b8e8a;font-weight:400">(PHẢI KHÔNG CÓ PASSWORD)</span></div>
   <div class="file-zone" id="masterZone">
     <div class="icon">📄</div>
     <div class="label">Kéo thả hoặc <b>chọn file</b></div>
-    <div class="sub">.xlsx — Detail Spare parts FY2026 new.xlsx</div>
-    <input type="file" id="masterInput" accept=".xlsx">
+    <div class="sub">File .xlsx <b>đã giải mã</b> (chạy decrypt.py trước nếu có pass)</div>
+    <input type="file" id="masterIn" accept=".xlsx">
   </div>
-  <div class="file-list" id="masterInfo"></div>
-
-  <div class="pw-toggle" onclick="togglePw()">
-    <span id="pwIcon">🔒</span>
-    <span>File có password? Nhập mật khẩu</span>
-  </div>
-  <div id="pwRow" style="display:none;margin-top:8px">
-    <input type="password" id="passwordInput" placeholder="Nhập password...">
-  </div>
+  <div id="masterInfo"></div>
+  <div class="note">⚠️ File master <b>phải không có password</b>. Nếu file gốc có pass <code>sp</code>, dùng script <b>decrypt.py</b> để giải mã trước. File đã giải mã dùng được mãi mãi!</div>
 </div>
 
-<!-- FILE SAMPLE -->
 <div class="card">
-  <div class="card-title">📁 File Sample <span style="font-size:11px;color:var(--text-dim);font-weight:400">(từ các bộ phận — chọn nhiều file)</span></div>
+  <div class="card-title">📁 File Sample <span style="font-size:11px;color:#9b8e8a;font-weight:400">(chọn nhiều file)</span></div>
   <div class="file-zone" id="sampleZone">
     <div class="icon">📂</div>
     <div class="label">Kéo thả hoặc <b>chọn nhiều file</b></div>
-    <div class="sub">.xlsx — Có thể chọn nhiều file cùng lúc (Ctrl+Click)</div>
-    <input type="file" id="sampleInput" accept=".xlsx" multiple>
+    <div class="sub">Có thể chọn nhiều file cùng lúc</div>
+    <input type="file" id="sampleIn" accept=".xlsx" multiple>
   </div>
-  <div class="file-list" id="sampleList"></div>
+  <div id="sampleList"></div>
 </div>
 
-<!-- THÁNG -->
 <div class="card">
   <div class="card-title">📅 Tháng</div>
-  <div class="row">
-    <select id="monthSelect">
-      <option value="Mar">Mar'26</option>
-      <option value="Apr">Apr'26</option>
-      <option value="May" selected>May'26</option>
-      <option value="Jun">Jun'26</option>
-    </select>
-  </div>
+  <select id="month"><option value="Mar">Mar'26</option><option value="Apr">Apr'26</option><option value="May" selected>May'26</option><option value="Jun">Jun'26</option></select>
 </div>
 
-<!-- RUN -->
-<button class="btn-run" id="runBtn" onclick="runConsolidation()" disabled>
+<button class="btn btn-run" id="runBtn" disabled onclick="run()">
   <span class="spinner"></span>
-  <span class="btn-text">🚀 RUN CONSOLIDATION</span>
+  <span>🚀 RUN CONSOLIDATION</span>
 </button>
 
-<!-- LOG -->
-<div class="card" style="margin-top:16px">
+<div class="card">
   <div class="card-title">📋 Log</div>
-  <div class="log-box" id="logBox">
-    <div class="log-empty">Chưa chạy. Chọn file và bấm RUN.</div>
-  </div>
+  <div class="log-box" id="log"><div style="color:#c4b8b4;text-align:center;padding:20px">Chọn files và bấm RUN</div></div>
 </div>
 
-<!-- RESULTS -->
-<div class="card results" id="resultsCard">
-  <div class="card-title">✅ Kết quả consolidation</div>
-  <div class="stat-grid" id="statGrid"></div>
-
-  <div class="card-title" style="margin-top:16px">📥 Download</div>
-  <button class="btn-download" onclick="downloadResult()">
-    💾 Tải file Master đã consolidate
-  </button>
-
-  <div class="card-title" style="margin-top:16px">⚠️ Unmatched (nếu có)</div>
-  <div class="table-wrap">
-    <table id="unmatchedTable">
-      <thead><tr><th>Section</th><th>PO No.</th><th>Mô tả</th><th>Qty</th></tr></thead>
-      <tbody></tbody>
-    </table>
-    <p id="unmatchedEmpty" style="color:var(--text-dim);font-size:12px;text-align:center;padding:12px">✅ Tất cả đều match thành công!</p>
-  </div>
+<div class="card result" id="res">
+  <div class="stats" id="stats"></div>
+  <button class="btn btn-dl" onclick="download()">💾 Tải file Consolidated</button>
+  <div class="card-title" style="margin-top:16px">⚠️ Unmatched</div>
+  <div id="umTable"></div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">v2.0 · Chạy 100% trên browser · Mọi dữ liệu đều ở local · © 2026</div>
-
+<div class="footer">v4 · Browser-only · SheetJS · 2026</div>
 </div>
 
 <script>
-// ================================================================
-// STATE
-// ================================================================
-let masterWorkbook = null;
-let masterFileName = '';
-let sampleFiles = []; // [{name, data, workbook, sections, rows}]
-let resultWorkbook = null;
-let resultFileName = '';
-let unmatched = [];
+const MAP={AO:'AO',AR:'AR COAT',AS:'Assembling',FI:'Final',GK:'GK',HC:'HARD COAT',HR:'HOLV ADMIN COMMON',IT:'IT','Material WH':'Material WH',MF:'Mixing Filling','MF-174':'Mixing Filling 174','MF-PNX':'Mixing Filling PNX',Mold:'Mold Preparation','PRO PLAN':'PRO PLAN','Pro-WH':'PRO WH',QA:'QA',Sensity:'SUNTECH','Hóa chất-Technical':'TECHNICAL',Facility:'TPM',Visual:'Visual',Export:'EXPORT'};
+let mWB=null,sFiles=[],rWB=null,unmatched=[];
 
-const SHEET_MAP = {
-  'AO':'AO','AR':'AR COAT','AS':'Assembling','FI':'Final',
-  'GK':'GK','HC':'HARD COAT','HR':'HOLV ADMIN COMMON','IT':'IT',
-  'Material WH':'Material WH','MF':'Mixing Filling','MF-174':'Mixing Filling 174',
-  'MF-PNX':'Mixing Filling PNX','Mold':'Mold Preparation',
-  'PRO PLAN':'PRO PLAN','Pro-WH':'PRO WH','QA':'QA',
-  'Sensity':'SUNTECH','Hóa chất-Technical':'TECHNICAL','Facility':'TPM',
-  'Visual':'Visual','Export':'EXPORT'
+function L(m,t){let b=document.getElementById('log'),e=b.querySelector('div');if(e)e.remove();let d=document.createElement('div');d.style.color={ok:'#7bc8a4',err:'#e89292',warn:'#e8c87a',h:'#f4a7a7'}[t]||'';d.textContent=m;b.appendChild(d);b.scrollTop=b.scrollHeight}
+
+document.getElementById('masterIn').onchange=async e=>{
+  let f=e.target.files[0];if(!f)return;
+  try{
+    let d=await f.arrayBuffer();
+    mWB=XLSX.read(d,{type:'array',cellDates:true});
+    document.getElementById('masterInfo').innerHTML=`<div class="file-item">✅ ${f.name}</div>`;
+    document.getElementById('masterZone').classList.add('has-file');
+    L(`✅ Master: ${f.name} (${mWB.SheetNames.length} sheets)`,'ok');
+    check();
+  }catch(e){L('❌ '+e.message,'err')}
 };
 
-const SAMPLE_OUTPUT_COL = 13;  // 0-indexed: N = col 13
-const MASTER_153_OUTPUT_COL = 22; // W = col 22
-const MASTER_152_OUTPUT_COL = 42; // AP = col 42
+document.getElementById('sampleIn').onchange=async e=>{
+  for(let f of e.target.files){await loadSample(f)}
+  check()
+};
 
-// ================================================================
-// LOGGING
-// ================================================================
-function el(id) { return document.getElementById(id); }
+async function loadSample(f){
+  try{
+    let d=await f.arrayBuffer(),wb=XLSX.read(d,{type:'array'}),sec=[],n=0;
+    for(let sn of wb.SheetNames){if(sn=='Check')continue;let ws=wb.Sheets[sn];if(!ws['!ref'])continue;
+      let j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      for(let r=6;r<j.length;r++){let q=parseFloat(j[r][13]);if(q&&q!==0)n++}
+      if(n>0){sec.push(MAP[sn]||sn);n>0&&(n=n)}}
+    sFiles.push({name:f.name,wb,sec});renderS();
+    L(`✅ ${f.name} — ${sec.length} sections`,'ok')
+  }catch(e){L('❌ '+e.message,'err')}
+}
+function renderS(){
+  document.getElementById('sampleList').innerHTML=sFiles.map((f,i)=>`<div class="file-item">📄 ${f.name}<span class="remove" onclick="sFiles.splice(${i},1);renderS();check()">✕</span></div>`).join('');
+  document.getElementById('sampleZone').classList.toggle('has-file',sFiles.length>0)
+}
+function check(){document.getElementById('runBtn').disabled=!(mWB&&sFiles.length>0)}
 
-function log(msg, type='info') {
-  const box = el('logBox');
-  const empty = box.querySelector('.log-empty');
-  if (empty) empty.remove();
-  const div = document.createElement('div');
-  div.className = type;
-  div.textContent = msg;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
+function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,'')}
+function score(s,m){let sc=0;let ps=norm(s.p||''),pm=norm(m.p||'');if(ps&&pm&&ps===pm)sc+=10;else if(ps&&pm&&(ps.includes(pm)||pm.includes(ps)))sc+=5;let ds=norm(s.d||''),dm=norm(m.d||'');if(ds&&dm&&ds===dm)sc+=8;else if(ds&&dm&&(ds.includes(dm)||dm.includes(ds)))sc+=4;return sc}
+
+function run(){
+  if(!mWB||!sFiles.length)return;
+  let btn=document.getElementById('runBtn');btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('log').innerHTML='';
+  let mo=document.getElementById('month').value;
+  L(`🚀 Consolidation ${mo}'26`,'h');
+
+  // Clone workbook
+  let out={SheetNames:[...mWB.SheetNames],Sheets:{}};
+  for(let sn of mWB.SheetNames)out.Sheets[sn]=XLSX.utils.aoa_to_sheet(XLSX.utils.sheet_to_json(mWB.Sheets[sn],{header:1,defval:''}));
+
+  let ad={},total=0;
+  for(let sf of sFiles){
+    for(let sn of sf.wb.SheetNames){if(sn=='Check')continue;
+      let sec=MAP[sn]||sn,ws=sf.wb.Sheets[sn];
+      let j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      for(let r=6;r<j.length;r++){
+        let q=parseFloat(j[r][13]);if(!q||q===0)continue;
+        let d=String(j[r][4]||'').trim(),p=String(j[r][5]||'').trim();
+        if(!ad[sec])ad[sec]=[];ad[sec].push({d,p,q});total++}
+    }
+  }
+  L(`📊 ${Object.keys(ad).length} sections, ${total} dòng output`,'ok');
+
+  unmatched=[];let m153=0,m152=0;
+  for(let [sec,rows] of Object.entries(ad)){
+    L(`  🔍 ${sec}...`);
+    let s153=`153-${mo}'26`,s152=`152-${mo}'26`;
+
+    if(out.SheetNames.includes(s153)){
+      let ws=out.Sheets[s153],j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),ms=[];
+      for(let r=11;r<j.length;r++){if(String(j[r][1]||'').trim().toUpperCase()!==sec.toUpperCase())continue;ms.push({r,d:String(j[r][0]||''),p:String(j[r][6]||'')})}
+      let used=new Set();
+      for(let row of rows){let best=null,bs=0;
+        for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
+        if(best&&bs>=4){XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:22}});used.add(best.r);m153++}
+        else unmatched.push({section:sec,po:row.p,desc:row.d,qty:row.q})}
+    }
+    if(out.SheetNames.includes(s152)){
+      let ws=out.Sheets[s152],j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),ms=[];
+      for(let r=11;r<j.length;r++){if(String(j[r][1]||'').trim().toUpperCase()!==sec.toUpperCase())continue;ms.push({r,d:String(j[r][0]||''),p:String(j[r][6]||'')})}
+      let used=new Set();
+      for(let row of rows){let best=null,bs=0;
+        for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
+        if(best&&bs>=4){XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:42}});used.add(best.r);m152++}}
+    }
+  }
+
+  rWB=out;
+  L(`✅ Done! Matched: ${m153+m152} | Unmatched: ${unmatched.length}`,'ok');
+  document.getElementById('stats').innerHTML=`
+    <div class="st g"><div class="n">${total}</div><div class="l">Total</div></div>
+    <div class="st"><div class="n">${m153+m152}</div><div class="l">Matched</div></div>
+    <div class="st ${unmatched.length?'e':'g'}"><div class="n">${unmatched.length}</div><div class="l">Unmatched</div></div>
+    <div class="st g"><div class="n">${((m153+m152)/Math.max(total,1)*100).toFixed(0)}%</div><div class="l">Rate</div></div>`;
+  let ut=unmatched.length?`<table><tr><th>Section</th><th>PO</th><th>Desc</th><th>Qty</th></tr>${unmatched.map(u=>`<tr><td>${u.section}</td><td>${u.po||'—'}</td><td>${(u.desc||'').substring(0,60)}</td><td>${u.qty}</td></tr>`).join('')}</table>`:'<p style="color:#7bc8a4;text-align:center;padding:12px">✅ Tất cả match!</p>';
+  document.getElementById('umTable').innerHTML=ut;
+  document.getElementById('res').classList.add('show');
+  btn.classList.remove('loading');btn.disabled=false
 }
 
-function clearLog() {
-  el('logBox').innerHTML = '<div class="log-empty">Chưa chạy.</div>';
+function download(){
+  if(!rWB)return;
+  XLSX.writeFile(rWB,`Detail_${document.getElementById('month').value}26_CONSOLIDATED.xlsx`);
+  L('💾 Downloaded!','ok')
 }
 
-// ================================================================
-// PASSWORD TOGGLE
-// ================================================================
-function togglePw() {
-  const row = el('pwRow');
-  row.style.display = row.style.display === 'none' ? 'block' : 'none';
-  el('pwIcon').textContent = row.style.display === 'block' ? '🔓' : '🔒';
-}
-
-// ================================================================
-// FILE LOADING
-// ================================================================
-function loadWorkbook(data) {
-  return XLSX.read(data, {type:'array', cellDates:true, cellNF:false, cellText:false});
-}
-
-// Master
-el('masterInput').addEventListener('change', async function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  await loadMaster(file);
+// Drag & drop
+['masterZone','sampleZone'].forEach(id=>{
+  let z=document.getElementById(id);
+  z.ondragover=e=>{e.preventDefault();z.classList.add('dragover')};
+  z.ondragleave=()=>z.classList.remove('dragover');
+  z.ondrop=async e=>{
+    e.preventDefault();z.classList.remove('dragover');
+    if(id==='masterZone'&&e.dataTransfer.files[0]){
+      let f=e.dataTransfer.files[0];
+      try{let d=await f.arrayBuffer();mWB=XLSX.read(d,{type:'array',cellDates:true});
+        document.getElementById('masterInfo').innerHTML=`<div class="file-item">✅ ${f.name}</div>`;z.classList.add('has-file');
+        L(`✅ Master: ${f.name}`,'ok');check()}catch(e){L('❌ '+e.message,'err')}
+    }else{
+      for(let f of e.dataTransfer.files){await loadSample(f)}check()
+    }
+  }
 });
-
-async function loadMaster(file) {
-  try {
-    const data = await file.arrayBuffer();
-    masterWorkbook = loadWorkbook(data);
-    masterFileName = file.name;
-    el('masterInfo').innerHTML = `
-      <div class="file-item">
-        <span class="name">✅ ${file.name}</span>
-        <span class="size">${(file.size/1024).toFixed(0)} KB</span>
-      </div>`;
-    el('masterZone').classList.add('has-file');
-    updateRunBtn();
-    log(`✅ Master: ${file.name} (${masterWorkbook.SheetNames.length} sheets)`, 'ok');
-  } catch(e) {
-    log(`❌ Lỗi đọc master: ${e.message}`, 'err');
-  }
-}
-
-// Sample - drag & drop
-el('sampleInput').addEventListener('change', async function(e) {
-  const files = e.target.files;
-  if (!files.length) return;
-  for (const f of files) {
-    await loadSample(f);
-  }
-  updateRunBtn();
-});
-
-// Drag & drop master
-el('masterZone').addEventListener('dragover', e => { e.preventDefault(); el('masterZone').classList.add('dragover'); });
-el('masterZone').addEventListener('dragleave', () => el('masterZone').classList.remove('dragover'));
-el('masterZone').addEventListener('drop', async e => {
-  e.preventDefault();
-  el('masterZone').classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file) await loadMaster(file);
-});
-
-// Drag & drop sample
-el('sampleZone').addEventListener('dragover', e => { e.preventDefault(); el('sampleZone').classList.add('dragover'); });
-el('sampleZone').addEventListener('dragleave', () => el('sampleZone').classList.remove('dragover'));
-el('sampleZone').addEventListener('drop', async e => {
-  e.preventDefault();
-  el('sampleZone').classList.remove('dragover');
-  for (const file of e.dataTransfer.files) {
-    await loadSample(file);
-  }
-});
-
-async function loadSample(file) {
-  try {
-    const data = await file.arrayBuffer();
-    const wb = loadWorkbook(data);
-
-    // Đọc dữ liệu từ các sheet (không tính Check)
-    let sections = [];
-    let totalRows = 0;
-    for (const sn of wb.SheetNames) {
-      if (sn === 'Check') continue;
-      const ws = wb.Sheets[sn];
-      const ref = ws['!ref'];
-      if (!ref) continue;
-
-      const sectionName = SHEET_MAP[sn] || sn;
-      const json = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-      let rows = 0;
-      for (let r = 6; r < json.length; r++) {
-        const qty = parseFloat(json[r][SAMPLE_OUTPUT_COL]);
-        if (qty && qty !== 0) rows++;
-      }
-      if (rows > 0) {
-        sections.push(sectionName);
-        totalRows += rows;
-      }
-    }
-
-    sampleFiles.push({name:file.name, size:file.size, workbook:wb, sections, totalRows});
-    renderSampleList();
-
-    const secStr = sections.join(', ');
-    log(`✅ Sample: ${file.name} — ${sections.length} sections: ${secStr} (${totalRows} dòng output)`, 'ok');
-  } catch(e) {
-    log(`❌ Lỗi đọc sample ${file.name}: ${e.message}`, 'err');
-  }
-}
-
-function renderSampleList() {
-  const list = el('sampleList');
-  if (sampleFiles.length === 0) {
-    list.innerHTML = '';
-    return;
-  }
-  list.innerHTML = sampleFiles.map((f, i) => `
-    <div class="file-item">
-      <span class="name">📄 ${f.name}
-        ${f.sections.map(s => `<span class="section-badge">${s}</span>`).join('')}
-      </span>
-      <span class="status-ok">${f.totalRows} dòng</span>
-      <span class="size">${(f.size/1024).toFixed(0)} KB</span>
-      <span class="remove" onclick="removeSample(${i})">✕</span>
-    </div>`).join('');
-  el('sampleZone').classList.add('has-file');
-}
-
-function removeSample(i) {
-  sampleFiles.splice(i, 1);
-  renderSampleList();
-  if (sampleFiles.length === 0) el('sampleZone').classList.remove('has-file');
-  updateRunBtn();
-}
-
-function updateRunBtn() {
-  el('runBtn').disabled = !(masterWorkbook && sampleFiles.length > 0);
-}
-
-// ================================================================
-// MATCHING LOGIC
-// ================================================================
-function normalize(s) {
-  return String(s).toLowerCase().replace(/[^a-z0-9]/g, '').trim();
-}
-
-function matchScore(sampleRow, masterRow) {
-  let score = 0;
-  let by = [];
-
-  const poS = normalize(sampleRow.po);
-  const poM = normalize(masterRow.po);
-  if (poS && poM && poS === poM) { score += 10; by.push('po'); }
-  else if (poS && poM && (poS.includes(poM) || poM.includes(poS))) { score += 5; by.push('po_partial'); }
-
-  const descS = normalize(sampleRow.desc);
-  const descM = normalize(masterRow.desc);
-  if (descS && descM && descS === descM) { score += 8; by.push('desc'); }
-  else if (descS && descM && (descS.includes(descM) || descM.includes(descS))) { score += 4; by.push('desc_partial'); }
-
-  return {score, by};
-}
-
-function consolidate(month) {
-  unmatched = [];
-  let matched153 = 0, matched152 = 0, totalRows = 0;
-
-  // Clone master workbook
-  const out = XLSX.utils.book_new();
-  // Copy all sheets from master
-  for (const sn of masterWorkbook.SheetNames) {
-    const ws = masterWorkbook.Sheets[sn];
-    XLSX.utils.book_append_sheet(out, ws, sn);
-  }
-
-  const sheet153 = `153-${month}'26`;
-  const sheet152 = `152-${month}'26`;
-
-  // Collect all sample data by section
-  const allSampleData = {}; // section -> [{desc, po, qty, invoice}]
-  for (const sf of sampleFiles) {
-    for (const sn of sf.workbook.SheetNames) {
-      if (sn === 'Check') continue;
-      const sectionName = SHEET_MAP[sn] || sn;
-      const ws = sf.workbook.Sheets[sn];
-      const json = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-
-      for (let r = 6; r < json.length; r++) {
-        const qty = parseFloat(json[r][SAMPLE_OUTPUT_COL]);
-        if (qty === undefined || qty === null || isNaN(qty) || qty === 0) continue;
-        const desc = String(json[r][4] || '').trim();
-        const po = String(json[r][5] || '').trim();
-        const invoice = String(json[r][2] || '').trim();
-        if (!allSampleData[sectionName]) allSampleData[sectionName] = [];
-        allSampleData[sectionName].push({desc, po, invoice, qty, origRow: r+1});
-        totalRows++;
-      }
-    }
-  }
-
-  // Match section by section
-  for (const [sectionName, rows] of Object.entries(allSampleData)) {
-    log(`  🔍 Matching ${sectionName}...`, 'info');
-
-    // Match vào 153 trước
-    if (out.SheetNames.includes(sheet153)) {
-      const ws = out.Sheets[sheet153];
-      const json = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-
-      // Build master rows index
-      const masterRows = [];
-      for (let r = 11; r < json.length; r++) {
-        const ms = String(json[r][1] || '').trim().toUpperCase(); // col B = section
-        if (ms !== sectionName.toUpperCase()) continue;
-        masterRows.push({
-          row: r,
-          desc: String(json[r][0] || ''),
-          po: String(json[r][6] || ''),  // G = PO
-          invoice: String(json[r][3] || ''), // D = Invoice
-        });
-      }
-
-      const used = new Set();
-      for (const row of rows) {
-        let best = {score:0, mr:null};
-        for (const mr of masterRows) {
-          if (used.has(mr.row)) continue;
-          const {score} = matchScore(row, mr);
-          if (score > best.score) { best = {score, mr}; }
-        }
-        if (best.score >= 4 && best.mr) {
-          const r = best.mr.row;
-          // Ghi output qty vào cell
-          const cellRef = XLSX.utils.encode_cell({r, c: MASTER_153_OUTPUT_COL});
-          if (!ws[cellRef]) ws[cellRef] = {t:'n', v:0};
-          ws[cellRef].v = row.qty;
-          used.add(best.mr.row);
-          matched153++;
-        } else {
-          unmatched.push({section:sectionName, po:row.po, desc:row.desc, qty:row.qty});
-        }
-      }
-    }
-
-    // Match vào 152
-    if (out.SheetNames.includes(sheet152)) {
-      const ws = out.Sheets[sheet152];
-      const json = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-
-      const masterRows = [];
-      for (let r = 11; r < json.length; r++) {
-        const ms = String(json[r][1] || '').trim().toUpperCase();
-        if (ms !== sectionName.toUpperCase()) continue;
-        masterRows.push({
-          row: r,
-          desc: String(json[r][0] || ''),
-          po: String(json[r][6] || ''),
-          invoice: String(json[r][3] || ''),
-        });
-      }
-
-      const used = new Set();
-      for (const row of rows) {
-        let best = {score:0, mr:null};
-        for (const mr of masterRows) {
-          if (used.has(mr.row)) continue;
-          const {score} = matchScore(row, mr);
-          if (score > best.score) best = {score, mr};
-        }
-        if (best.score >= 4 && best.mr) {
-          const r = best.mr.row;
-          const cellRef = XLSX.utils.encode_cell({r, c: MASTER_152_OUTPUT_COL});
-          if (!ws[cellRef]) ws[cellRef] = {t:'n', v:0};
-          ws[cellRef].v = row.qty;
-          used.add(best.mr.row);
-          matched152++;
-        }
-      }
-    }
-  }
-
-  resultWorkbook = out;
-  resultFileName = `Detail_Spare_parts_${month}26_CONSOLIDATED.xlsx`;
-
-  // Show results
-  showResults(totalRows, matched153, matched152, unmatched);
-  enableDownload();
-
-  return {matched153, matched152, unmatched, totalRows};
-}
-
-// ================================================================
-// RESULTS UI
-// ================================================================
-function showResults(total, m153, m152, um) {
-  const card = el('resultsCard');
-  card.classList.add('show');
-  card.scrollIntoView({behavior:'smooth'});
-
-  el('statGrid').innerHTML = `
-    <div class="stat-card green"><div class="num">${total}</div><div class="lbl">Tổng output</div></div>
-    <div class="stat-card"><div class="num">${m153 + m152}</div><div class="lbl">Đã match</div></div>
-    <div class="stat-card ${um.length > 0 ? 'red' : 'green'}"><div class="num">${um.length}</div><div class="lbl">Unmatched</div></div>
-    <div class="stat-card green"><div class="num">${((m153+m152)/Math.max(total,1)*100).toFixed(0)}%</div><div class="lbl">Tỉ lệ match</div></div>
-  `;
-
-  const tbody = el('unmatchedTable').querySelector('tbody');
-  const empty = el('unmatchedEmpty');
-
-  if (um.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    empty.textContent = '✅ Tất cả đều match thành công!';
-    return;
-  }
-
-  empty.style.display = 'none';
-  tbody.innerHTML = um.map(u => `
-    <tr>
-      <td>${u.section}</td>
-      <td>${u.po || '—'}</td>
-      <td>${u.desc.substring(0, 60)}</td>
-      <td>${u.qty}</td>
-    </tr>`).join('');
-}
-
-let downloadReady = false;
-
-function enableDownload() {
-  downloadReady = true;
-}
-
-function downloadResult() {
-  if (!resultWorkbook) {
-    log('❌ Chưa có kết quả!', 'err');
-    return;
-  }
-  XLSX.writeFile(resultWorkbook, resultFileName);
-  log(`💾 Đã tải: ${resultFileName}`, 'ok');
-}
-
-// ================================================================
-// MAIN RUN
-// ================================================================
-async function runConsolidation() {
-  if (!masterWorkbook) { log('❌ Chưa chọn file Master!', 'err'); return; }
-  if (sampleFiles.length === 0) { log('❌ Chưa chọn file Sample nào!', 'err'); return; }
-
-  const btn = el('runBtn');
-  btn.classList.add('loading');
-  btn.disabled = true;
-  clearLog();
-
-  const month = el('monthSelect').value;
-  log(`🚀 CONSOLIDATION - ${month}'26`, 'highlight');
-  log(`📂 Master: ${masterFileName}`);
-  log(`📁 Sample: ${sampleFiles.length} files`);
-  for (const sf of sampleFiles) {
-    log(`  ✅ ${sf.name} — ${sf.sections.length} sections`, 'ok');
-  }
-
-  // Delay để UI update
-  await new Promise(r => setTimeout(r, 100));
-
-  try {
-    const result = consolidate(month);
-    log(`\n✅ HOÀN THÀNH!`, 'ok');
-    log(`📊 Đã match: ${result.matched153 + result.matched152} dòng`);
-    log(`⚠️ Unmatched: ${result.unmatched.length} dòng`);
-    if (result.unmatched.length > 0 && result.unmatched.length <= 20) {
-      log(`\n⚠️ Chi tiết unmatched:`, 'warn');
-      for (const u of result.unmatched) {
-        log(`  • [${u.section}] ${u.desc.substring(0,50)} | PO: ${u.po} | Qty: ${u.qty}`, 'warn');
-      }
-    }
-  } catch(e) {
-    log(`\n❌ LỖI: ${e.message}`, 'err');
-    console.error(e);
-  }
-
-  btn.classList.remove('loading');
-  btn.disabled = false;
-}
 </script>
 </body>
 </html>
