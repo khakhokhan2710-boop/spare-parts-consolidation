@@ -2,7 +2,19 @@
 import os, io, tempfile
 from pathlib import Path
 from flask import Flask, request, jsonify, send_file
-import msoffcrypto, openpyxl
+import openpyxl
+
+# Try msoffcrypto (fails on Python 3.14+), fallback to decryptlib
+try:
+    import msoffcrypto
+    HAS_MSOFF = True
+except:
+    HAS_MSOFF = False
+try:
+    from decryptlib import decrypt_excel
+    HAS_DECRYPTLIB = True
+except:
+    HAS_DECRYPTLIB = False
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
@@ -23,14 +35,18 @@ import re
 def norm(s): return re.sub(r'[^a-z0-9]','',str(s).lower().strip())
 
 def decrypt_xl(fb, pw='sp'):
-    """Decrypt Excel with msoffcrypto"""
+    """Decrypt Excel - auto-select backend"""
     try:
         openpyxl.load_workbook(io.BytesIO(fb), data_only=True).close()
         return fb
     except: pass
-    o = msoffcrypto.OfficeFile(io.BytesIO(fb))
-    o.load_key(password=pw)
-    b = io.BytesIO(); o.decrypt(b); b.seek(0); return b.read()
+    if HAS_MSOFF:
+        o = msoffcrypto.OfficeFile(io.BytesIO(fb))
+        o.load_key(password=pw)
+        b = io.BytesIO(); o.decrypt(b); b.seek(0); return b.read()
+    if HAS_DECRYPTLIB:
+        return decrypt_excel(fb, pw)
+    raise RuntimeError('No decrypt library available!')
 
 def read_sample(fb):
     wb = openpyxl.load_workbook(io.BytesIO(fb), data_only=True)
