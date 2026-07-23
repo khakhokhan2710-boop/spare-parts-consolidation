@@ -183,35 +183,61 @@ function run(){
 
   unmatched=[];let m153=0,m152=0;
   for(let [sec,rows] of Object.entries(ad)){
-    L(`  🔍 ${sec}...`);
     let s153=`153-${mo}'26`,s152=`152-${mo}'26`;
+    let matched_rows=new Set(); // Track rows đã match
 
+    // Match vào 153 trước
     if(out.SheetNames.includes(s153)){
       let ws=out.Sheets[s153],j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),ms=[];
       for(let r=11;r<j.length;r++){if(String(j[r][1]||'').trim().toUpperCase()!==sec.toUpperCase())continue;ms.push({r,d:String(j[r][0]||''),p:String(j[r][6]||'')})}
-      let used=new Set();
-      for(let row of rows){let best=null,bs=0;
-        for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
-        if(best&&bs>=4){XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:22}});used.add(best.r);m153++}
-        else unmatched.push({section:sec,po:row.p,desc:row.d,qty:row.q})}
+      if(ms.length>0){
+        let used=new Set();
+        for(let ri=0;ri<rows.length;ri++){
+          let row=rows[ri],best=null,bs=0;
+          for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
+          if(best&&bs>=4){
+            XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:22}});
+            used.add(best.r);m153++;matched_rows.add(ri);
+          }
+        }
+        L(`  ✅ 153: ${sec} → ${m153 - (m153-matched_rows.size)} matched`,'ok');
+      }
     }
+
+    // Match vào 152 (chỉ những dòng chưa match ở 153)
     if(out.SheetNames.includes(s152)){
       let ws=out.Sheets[s152],j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),ms=[];
       for(let r=11;r<j.length;r++){if(String(j[r][1]||'').trim().toUpperCase()!==sec.toUpperCase())continue;ms.push({r,d:String(j[r][0]||''),p:String(j[r][6]||'')})}
-      let used=new Set();
-      for(let row of rows){let best=null,bs=0;
-        for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
-        if(best&&bs>=4){XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:42}});used.add(best.r);m152++}}
+      if(ms.length>0){
+        let used=new Set(),sec152=0;
+        for(let ri=0;ri<rows.length;ri++){
+          if(matched_rows.has(ri))continue; // Đã match ở 153 rồi
+          let row=rows[ri],best=null,bs=0;
+          for(let mr of ms){if(used.has(mr.r))continue;let s=score(row,mr);if(s>bs){best=mr;bs=s}}
+          if(best&&bs>=4){
+            XLSX.utils.sheet_add_aoa(ws,[[row.q]],{origin:{r:best.r,c:42}});
+            used.add(best.r);m152++;matched_rows.add(ri);sec152++;
+          }
+        }
+        if(sec152>0)L(`  ✅ 152: ${sec} → ${sec152} matched`,'ok');
+      }
+    }
+
+    // Unmatched = rows that didn't match anywhere
+    for(let ri=0;ri<rows.length;ri++){
+      if(!matched_rows.has(ri)){
+        unmatched.push({section:sec,po:rows[ri].p,desc:rows[ri].d,qty:rows[ri].q});
+      }
     }
   }
 
   rWB=out;
-  L(`✅ Done! Matched: ${m153+m152} | Unmatched: ${unmatched.length}`,'ok');
+  L(`✅ Done! 153: ${m153} | 152: ${m152} | Unmatched: ${unmatched.length}`,'ok');
   document.getElementById('stats').innerHTML=`
     <div class="st g"><div class="n">${total}</div><div class="l">Total</div></div>
-    <div class="st"><div class="n">${m153+m152}</div><div class="l">Matched</div></div>
-    <div class="st ${unmatched.length?'e':'g'}"><div class="n">${unmatched.length}</div><div class="l">Unmatched</div></div>
-    <div class="st g"><div class="n">${((m153+m152)/Math.max(total,1)*100).toFixed(0)}%</div><div class="l">Rate</div></div>`;
+    <div class="st"><div class="n">${m153}</div><div class="l">153 (Spare)</div></div>
+    <div class="st"><div class="n">${m152}</div><div class="l">152 (Other)</div></div>
+    <div class="st ${unmatched.length?'e':'g'}"><div class="n">${unmatched.length}</div><div class="l">Unmatched</div></div>`;
   let ut=unmatched.length?`<table><tr><th>Section</th><th>PO</th><th>Desc</th><th>Qty</th></tr>${unmatched.map(u=>`<tr><td>${u.section}</td><td>${u.po||'—'}</td><td>${(u.desc||'').substring(0,60)}</td><td>${u.qty}</td></tr>`).join('')}</table>`:'<p style="color:#7bc8a4;text-align:center;padding:12px">✅ Tất cả match!</p>';
   document.getElementById('umTable').innerHTML=ut;
   document.getElementById('res').classList.add('show');
@@ -300,4 +326,3 @@ animate();
 </script>
 </body>
 </html>
- 
