@@ -85,35 +85,46 @@ def consolidate(mb, sd, month):
     s153,f152=f"153-{month}'26",f"152-{month}'26"
     m153=m152=0; um=[]
     for sec,rows in sd.items():
+        matched = set()  # Track rows đã match
+        
+        # Match vào 153
         if s153 in wb.sheetnames:
             ws,w=wb[s153],wd[s153]; ms=[]
             for r in range(12,w.max_row+1):
                 if str(w.cell(r,2).value or '').strip().upper()!=sec.upper(): continue
                 ms.append({'r':r,'d':str(w.cell(r,1).value or ''),'p':str(w.cell(r,7).value or '')})
             u=set()
-            for row in rows:
+            for ri,row in enumerate(rows):
                 best=None;bsc=0
                 for mr in ms:
                     if mr['r'] in u: continue
                     s2=match_score(row,mr)
                     if s2>bsc: best,bsc=mr,s2
                 if best and bsc>=4:
-                    ws.cell(best['r'],23).value=row['qty']; u.add(best['r']); m153+=1
-                else: um.append({'section':sec,'po':row.get('po',''),'desc':row.get('desc','')[:60],'qty':row.get('qty',0)})
+                    ws.cell(best['r'],23).value=row['qty']; u.add(best['r']); m153+=1; matched.add(ri)
+        
+        # Match vào 152 (chỉ rows chưa match ở 153)
         if f152 in wb.sheetnames:
             ws,w=wb[f152],wd[f152]; ms=[]
             for r in range(12,w.max_row+1):
                 if str(w.cell(r,2).value or '').strip().upper()!=sec.upper(): continue
                 ms.append({'r':r,'d':str(w.cell(r,1).value or ''),'p':str(w.cell(r,7).value or '')})
             u=set()
-            for row in rows:
+            for ri,row in enumerate(rows):
+                if ri in matched: continue  # Đã match ở 153
                 best=None;bsc=0
                 for mr in ms:
                     if mr['r'] in u: continue
                     s2=match_score(row,mr)
                     if s2>bsc: best,bsc=mr,s2
                 if best and bsc>=4:
-                    ws.cell(best['r'],43).value=row['qty']; u.add(best['r']); m152+=1
+                    ws.cell(best['r'],43).value=row['qty']; u.add(best['r']); m152+=1; matched.add(ri)
+        
+        # Unmatched = rows not matched anywhere
+        for ri,row in enumerate(rows):
+            if ri not in matched:
+                um.append({'section':sec,'po':row.get('po',''),'desc':row.get('desc','')[:60],'qty':row.get('qty',0)})
+    
     b=io.BytesIO(); wb.save(b); b.seek(0); wb.close(); wd.close()
     return b.getvalue(),{'matched153':m153,'matched152':m152,'unmatched':um,'total':sum(len(v) for v in sd.values())}
 
