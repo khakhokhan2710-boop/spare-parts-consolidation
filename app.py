@@ -173,15 +173,15 @@ def api():
 def health():
     import sys, platform
     mods = {}
-    for m in ['openpyxl','msoffcrypto','flask','gunicorn']:
+    for m in ['openpyxl','msoffcrypto','flask','gunicorn','cryptography','olefile']:
         try: exec(f'import {m}; mods["{m}"]={m}.__version__')
         except: mods[m] = 'NOT FOUND'
     return jsonify({
         'python': sys.version,
-        'platform': platform.platform(),
         'modules': mods,
-        'cwd': os.getcwd(),
-        'files': os.listdir('.')[:20],
+        'HAS_MSOFF': HAS_MSOFF,
+        'HAS_DECRYPTLIB': HAS_DECRYPTLIB,
+        'DECRYPTLIB_ERR': DECRYPTLIB_ERR if not HAS_DECRYPTLIB else 'OK',
     })
 
 @app.route('/api/download/<fn>')
