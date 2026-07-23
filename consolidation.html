@@ -7,65 +7,68 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#fdf6f0;color:#4a4a4a;min-height:100vh;display:flex;justify-content:center;padding:24px}
-.container{max-width:900px;width:100%}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#0d0d10;color:#ccc;min-height:100vh;display:flex;justify-content:center;padding:24px;position:relative}
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{max-width:900px;width:100%;position:relative;z-index:1}
 .header{text-align:center;padding:32px 0 24px}
-.header .logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#fce4e4,#dff0f8);margin-bottom:12px;font-size:32px}
-.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,#f4a7a7,#c3aed6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header p{color:#9b8e8a;font-size:13px;margin-top:4px}
-.header .badge{display:inline-block;background:#ede4f3;color:#4a4a4a;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;margin-top:10px}
-.card{background:#fff;border:1px solid #f0e0d8;border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 2px 12px rgba(200,170,160,.12)}
-.card-title{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.file-zone{position:relative;border:2px dashed #f0e0d8;border-radius:10px;padding:26px 20px;text-align:center;transition:.25s;cursor:pointer;background:#f8eee6}
-.file-zone:hover,.file-zone.dragover{border-color:#f4a7a7;background:#fce4e4}
-.file-zone.has-file{border-color:#b5e6c3;border-style:solid;background:#e3f5e8}
+.header .logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#70407440,#00ccff40);margin-bottom:12px;font-size:32px;border:1px solid #00ccff30}
+.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,#704074,#ca9191,#00ccff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:#888;font-size:13px;margin-top:4px}
+.header .badge{display:inline-block;background:rgba(112,64,116,.3);color:#ca9191;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;margin-top:10px;border:1px solid #00ccff20}
+.card{background:rgba(20,20,30,.85);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
+.card-title{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:#ccc}
+.file-zone{position:relative;border:2px dashed rgba(255,255,255,.1);border-radius:10px;padding:26px 20px;text-align:center;transition:.25s;cursor:pointer;background:rgba(255,255,255,.03)}
+.file-zone:hover,.file-zone.dragover{border-color:#704074;background:rgba(112,64,116,.15)}
+.file-zone.has-file{border-color:#00ccff;border-style:solid;background:rgba(0,204,255,.08)}
 .file-zone .icon{font-size:36px;margin-bottom:8px;display:block}
-.file-zone .label{font-size:14px;color:#9b8e8a}
-.file-zone .label b{color:#4a4a4a}
-.file-zone .sub{font-size:11px;color:#c4b8b4;margin-top:6px}
+.file-zone .label{font-size:14px;color:#888}
+.file-zone .label b{color:#ccc}
+.file-zone .sub{font-size:11px;color:#666;margin-top:6px}
 .file-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .file-list{margin-top:12px}
-.file-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8eee6;border-radius:10px;margin-bottom:6px;font-size:13px}
-.file-item .remove{color:#e89292;cursor:pointer;font-size:18px;padding:0 6px}
-select{width:100%;padding:11px 14px;background:#f8eee6;border:1px solid #f0e0d8;border-radius:10px;color:#4a4a4a;font-size:14px;outline:none}
-select:focus{border-color:#f4a7a7}
+.file-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:6px;font-size:13px}
+.file-item .remove{color:#ca9191;cursor:pointer;font-size:18px;padding:0 6px}
+select{width:100%;padding:11px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#ccc;font-size:14px;outline:none}
+select:focus{border-color:#704074}
 .btn{width:100%;padding:16px;border:none;border-radius:14px;color:#fff;font-size:17px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
-.btn-run{background:linear-gradient(135deg,#f4a7a7,#c3aed6);box-shadow:0 4px 16px rgba(244,167,167,.25)}
-.btn-run:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(244,167,167,.35)}
+.btn-run{background:linear-gradient(135deg,#704074,#ca9191,#00ccff);box-shadow:0 4px 16px rgba(0,204,255,.25)}
+.btn-run:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,204,255,.35)}
 .btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-dl{background:linear-gradient(135deg,#b5e6c3,#e3f5e8);color:#4a4a4a}
-.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.btn-dl{background:linear-gradient(135deg,#00ccff40,#ca919140);color:#ccc}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#00ccff;border-radius:50%;animation:spin .6s linear infinite}
 .loading .spinner{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.log-box{background:#f8eee6;border-radius:10px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.7;max-height:240px;overflow-y:auto;white-space:pre-wrap}
+.log-box{background:rgba(0,0,0,.3);border-radius:10px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.7;max-height:240px;overflow-y:auto;white-space:pre-wrap}
 .result{display:none;margin-top:16px}
 .result.show{display:block;animation:fade .4s}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:12px 0}
-.st{background:#f8eee6;border-radius:10px;padding:14px;text-align:center}
-.st .n{font-size:22px;font-weight:800;color:#f4a7a7}
-.st .l{font-size:11px;color:#9b8e8a;margin-top:2px}
+.st{background:rgba(0,0,0,.3);border-radius:10px;padding:14px;text-align:center}
+.st .n{font-size:22px;font-weight:800;color:#00ccff}
+.st .l{font-size:11px;color:#888;margin-top:2px}
 .st.g .n{color:#7bc8a4}
-.st.e .n{color:#e89292}
+.st.e .n{color:#ca9191}
 table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
-th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #f0e0d8}
-th{background:#f8eee6;font-weight:600;color:#9b8e8a;font-size:11px}
-.footer{text-align:center;padding:24px 0;color:#c4b8b4;font-size:11px}
-.note{background:#fef5e0;border:1px solid #fce9b5;border-radius:10px;padding:10px 14px;font-size:12px;margin-top:8px;color:#8a7a40}
-.note b{color:#c8a030}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08)}
+th{background:rgba(255,255,255,.03);font-weight:600;color:#888;font-size:11px}
+.footer{text-align:center;padding:24px 0;color:#666;font-size:11px}
+.note{background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.2);border-radius:10px;padding:10px 14px;font-size:12px;margin-top:8px;color:#00ccff88}
+.note b{color:#00ccff}
 </style>
 </head>
 <body>
+<canvas id="bgCanvas"></canvas>
 <div class="container">
 
 <div class="header">
   <div class="logo">🧾</div>
   <h1>Spare Parts Consolidation</h1>
-  <p>HOYA LENS VIET NAM LTD. · 💾 Chạy offline, chỉ cần trình duyệt</p>
+  <p>HOYA LENS VIET NAM LTD.</p>
+  <span class="badge">⚡ Chạy 100% trên trình duyệt · Không cần cài đặt</span>
 </div>
 
 <div class="card">
-  <div class="card-title">📂 File Master <span style="font-size:11px;color:#9b8e8a;font-weight:400">(PHẢI KHÔNG CÓ PASSWORD)</span></div>
+  <div class="card-title">📂 File Master <span style="font-size:11px;color:#888;font-weight:400">(PHẢI KHÔNG CÓ PASSWORD)</span></div>
   <div class="file-zone" id="masterZone">
     <div class="icon">📄</div>
     <div class="label">Kéo thả hoặc <b>chọn file</b></div>
@@ -73,11 +76,11 @@ th{background:#f8eee6;font-weight:600;color:#9b8e8a;font-size:11px}
     <input type="file" id="masterIn" accept=".xlsx">
   </div>
   <div id="masterInfo"></div>
-  <div class="note">⚠️ File master <b>phải không có password</b>. Nếu file gốc có pass <code>sp</code>, dùng script <b>decrypt.py</b> để giải mã trước. File đã giải mã dùng được mãi mãi!</div>
+  <div class="note">⚠️ File master <b>phải không có password</b>. Nếu file gốc có pass <code>sp</code>, dùng script <b>decrypt.py</b> để giải mã trước.</div>
 </div>
 
 <div class="card">
-  <div class="card-title">📁 File Sample <span style="font-size:11px;color:#9b8e8a;font-weight:400">(chọn nhiều file)</span></div>
+  <div class="card-title">📁 File Sample <span style="font-size:11px;color:#888;font-weight:400">(chọn nhiều file)</span></div>
   <div class="file-zone" id="sampleZone">
     <div class="icon">📂</div>
     <div class="label">Kéo thả hoặc <b>chọn nhiều file</b></div>
@@ -99,7 +102,7 @@ th{background:#f8eee6;font-weight:600;color:#9b8e8a;font-size:11px}
 
 <div class="card">
   <div class="card-title">📋 Log</div>
-  <div class="log-box" id="log"><div style="color:#c4b8b4;text-align:center;padding:20px">Chọn files và bấm RUN</div></div>
+  <div class="log-box" id="log"><div style="color:#666;text-align:center;padding:20px">Chọn files và bấm RUN</div></div>
 </div>
 
 <div class="card result" id="res">
@@ -109,14 +112,14 @@ th{background:#f8eee6;font-weight:600;color:#9b8e8a;font-size:11px}
   <div id="umTable"></div>
 </div>
 
-<div class="footer">v4 · Browser-only · SheetJS · 2026</div>
+<div class="footer">HOYA · Spare Parts · 2026</div>
 </div>
 
 <script>
 const MAP={AO:'AO',AR:'AR COAT',AS:'Assembling',FI:'Final',GK:'GK',HC:'HARD COAT',HR:'HOLV ADMIN COMMON',IT:'IT','Material WH':'Material WH',MF:'Mixing Filling','MF-174':'Mixing Filling 174','MF-PNX':'Mixing Filling PNX',Mold:'Mold Preparation','PRO PLAN':'PRO PLAN','Pro-WH':'PRO WH',QA:'QA',Sensity:'SUNTECH','Hóa chất-Technical':'TECHNICAL',Facility:'TPM',Visual:'Visual',Export:'EXPORT'};
 let mWB=null,sFiles=[],rWB=null,unmatched=[];
 
-function L(m,t){let b=document.getElementById('log'),e=b.querySelector('div');if(e)e.remove();let d=document.createElement('div');d.style.color={ok:'#7bc8a4',err:'#e89292',warn:'#e8c87a',h:'#f4a7a7'}[t]||'';d.textContent=m;b.appendChild(d);b.scrollTop=b.scrollHeight}
+function L(m,t){let b=document.getElementById('log'),e=b.querySelector('div');if(e)e.remove();let d=document.createElement('div');d.style.color={ok:'#7bc8a4',err:'#ca9191',warn:'#ff0',h:'#00ccff'}[t]||'';d.textContent=m;b.appendChild(d);b.scrollTop=b.scrollHeight}
 
 document.getElementById('masterIn').onchange=async e=>{
   let f=e.target.files[0];if(!f)return;
@@ -137,11 +140,12 @@ document.getElementById('sampleIn').onchange=async e=>{
 
 async function loadSample(f){
   try{
-    let d=await f.arrayBuffer(),wb=XLSX.read(d,{type:'array'}),sec=[],n=0;
+    let d=await f.arrayBuffer(),wb=XLSX.read(d,{type:'array'}),sec=[];
+    let n=0;
     for(let sn of wb.SheetNames){if(sn=='Check')continue;let ws=wb.Sheets[sn];if(!ws['!ref'])continue;
       let j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       for(let r=6;r<j.length;r++){let q=parseFloat(j[r][13]);if(q&&q!==0)n++}
-      if(n>0){sec.push(MAP[sn]||sn);n>0&&(n=n)}}
+      if(n>0){sec.push(MAP[sn]||sn)}}
     sFiles.push({name:f.name,wb,sec});renderS();
     L(`✅ ${f.name} — ${sec.length} sections`,'ok')
   }catch(e){L('❌ '+e.message,'err')}
@@ -162,7 +166,6 @@ function run(){
   let mo=document.getElementById('month').value;
   L(`🚀 Consolidation ${mo}'26`,'h');
 
-  // Clone workbook
   let out={SheetNames:[...mWB.SheetNames],Sheets:{}};
   for(let sn of mWB.SheetNames)out.Sheets[sn]=XLSX.utils.aoa_to_sheet(XLSX.utils.sheet_to_json(mWB.Sheets[sn],{header:1,defval:''}));
 
@@ -183,7 +186,6 @@ function run(){
   for(let [sec,rows] of Object.entries(ad)){
     L(`  🔍 ${sec}...`);
     let s153=`153-${mo}'26`,s152=`152-${mo}'26`;
-
     if(out.SheetNames.includes(s153)){
       let ws=out.Sheets[s153],j=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),ms=[];
       for(let r=11;r<j.length;r++){if(String(j[r][1]||'').trim().toUpperCase()!==sec.toUpperCase())continue;ms.push({r,d:String(j[r][0]||''),p:String(j[r][6]||'')})}
@@ -222,7 +224,6 @@ function download(){
   L('💾 Downloaded!','ok')
 }
 
-// Drag & drop
 ['masterZone','sampleZone'].forEach(id=>{
   let z=document.getElementById(id);
   z.ondragover=e=>{e.preventDefault();z.classList.add('dragover')};
@@ -239,6 +240,63 @@ function download(){
     }
   }
 });
+</script>
+
+<!-- FloatingLines Background Canvas -->
+<script>
+(function(){
+const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+let mx=0,my=0,tmx=0,tmy=0,parallaxX=0,parallaxY=0;
+const GRAD=['#704074','#ca9191','#00ccff'];
+const LINES=12,POINTS=6,BEND=5,STR=-0.5,DAMP=0.05,PARA=0.2;
+
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+document.addEventListener('mousemove',e=>{tmx=e.clientX;tmy=e.clientY});
+
+const lines=[];
+for(let i=0;i<LINES;i++){
+  const pts=[];
+  for(let j=0;j<POINTS;j++){
+    pts.push({x:Math.random()*c.width,y:Math.random()*c.height,
+      vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+      ox:Math.random()*c.width,oy:Math.random()*c.height});
+  }
+  lines.push({pts,color:GRAD[i%3],width:1+Math.random()*2,phase:Math.random()*Math.PI*2});
+}
+
+function animate(){
+  ctx.clearRect(0,0,c.width,c.height);
+  mx+=(tmx-mx)*DAMP;my+=(tmy-my)*DAMP;
+  parallaxX+=(mx-parallaxX)*DAMP*.5;parallaxY+=(my-parallaxY)*DAMP*.5;
+
+  lines.forEach((line,li)=>{
+    const t=Date.now()*.001*.3+line.phase;
+    line.pts.forEach((pt,pi)=>{
+      const offsetX=(pi-POINTS/2)*40,offsetY=Math.sin(t+pi*1.5)*30;
+      const px=pt.ox+offsetX+parallaxX*PARA*(pi/POINTS);
+      const py=pt.oy+offsetY+parallaxY*PARA*(pi/POINTS);
+      pt.vx+=(px-pt.x)*0.01;pt.vy+=(py-pt.y)*0.01;
+      pt.vx*=.95;pt.vy*=.95;
+      pt.x+=pt.vx;pt.y+=pt.vy;
+    });
+    ctx.beginPath();
+    ctx.moveTo(line.pts[0].x,line.pts[0].y);
+    for(let i=1;i<POINTS-1;i+=2){
+      ctx.bezierCurveTo(line.pts[i].x+BEND*STR,line.pts[i].y+BEND*STR,
+        line.pts[i+1].x+BEND*STR,line.pts[i+1].y+BEND*STR,
+        (line.pts[i+2]||line.pts[i]).x,(line.pts[i+2]||line.pts[i]).y);
+    }
+    ctx.strokeStyle=line.color;ctx.lineWidth=line.width;
+    ctx.globalAlpha=.12+Math.sin(t+li)*.05;
+    ctx.shadowBlur=15;ctx.shadowColor=line.color;
+    ctx.stroke();
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+})();
 </script>
 </body>
 </html>
