@@ -8,13 +8,14 @@ import openpyxl
 try:
     import msoffcrypto
     HAS_MSOFF = True
-except:
+except Exception:
     HAS_MSOFF = False
 try:
     from decryptlib import decrypt_excel
     HAS_DECRYPTLIB = True
-except:
+except Exception as e:
     HAS_DECRYPTLIB = False
+    DECRYPTLIB_ERR = str(e)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
